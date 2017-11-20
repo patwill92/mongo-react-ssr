@@ -19,13 +19,16 @@ app.use('/api', api);
 
 app.get('*', (req, res) => {
   const store = createStore(reducers, {});
-  let promises = matchRoutes(Routes, req.path).filter(({route}) => {
+  let promises = matchRoutes(Routes, req.path).map(({route}) => {
     let model = route.dbInstance && route.dbInstance();
     return route.loadData ? route.loadData(Model[model]) : null;
+  }).filter(promise => {
+    return promise
   });
   Promise.all(promises).then((promise) => {
-    if (promise.length) {
+    if (promise[0]) {
       let {data, func} = promise[0];
+      console.log(data);
       store.dispatch(func(data));
     }
     const context = {};
