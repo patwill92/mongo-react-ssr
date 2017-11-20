@@ -47,7 +47,12 @@ const loadData = async (Item) => {
   }
 };
 
+const dbInstance = () => {
+  return 'Item'
+};
+
 export default {
   component: connect(mapStateToProps, {fetchItems})(withStyles(styles)(App)),
-  loadData
+  loadData,
+  dbInstance
 };

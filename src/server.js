@@ -6,24 +6,25 @@ import mongoose from 'mongoose'
 import {createStore} from 'redux'
 import reducers from './client/reducers'
 
-import Item from './models/Item'
+import Model from './models'
 
 const app = express();
 import api from './api/routes'
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/ghostusers');
+mongoose.connect(process.env.MONGO_URI);
 
 app.use(express.static('public'));
 app.use('/api', api);
 
 app.get('*', (req, res) => {
   const store = createStore(reducers, {});
-  let promises = matchRoutes(Routes, req.path).map(async ({route}) => {
-    return route.loadData ? await route.loadData(Item) : null;
+  let promises = matchRoutes(Routes, req.path).filter(({route}) => {
+    let model = route.dbInstance && route.dbInstance();
+    return route.loadData ? route.loadData(Model[model]) : null;
   });
   Promise.all(promises).then((promise) => {
-    if (promise[0]) {
+    if (promise.length) {
       let {data, func} = promise[0];
       store.dispatch(func(data));
     }

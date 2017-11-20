@@ -1,10 +1,11 @@
 import express from 'express'
 
-import Item from '../models/Item'
+import Model from '../models'
 
 const router = express.Router();
 
 router.get('/items', (req, res) => {
+  let {Item} = Model;
   Item
     .find({})
     .then((doc) => {
