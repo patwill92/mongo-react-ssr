@@ -1,7 +1,16 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import Button from 'material-ui/Button'
 import {withStyles} from 'material-ui/styles'
+import List, {
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+} from 'material-ui/List';
+import Paper from 'material-ui/Paper'
+import Grid from 'material-ui/Grid';
+import Avatar from 'material-ui/Avatar';
+import Typography from 'material-ui/Typography';
+import MenuItemIcon from 'material-ui-icons/RestaurantMenu';
 
 import Wrapper from './components/Wrapper'
 import {fetchItems, fetchItemsServer} from './actions/index'
@@ -9,24 +18,61 @@ import {fetchItems, fetchItemsServer} from './actions/index'
 
 const styles = theme => ({
   root: {
-    background: theme.palette.primary[500]
+    flexGrow: 1,
+    maxWidth: 752,
+  },
+  demo: {
+    background: '#fff',
+  },
+  title: {
+    padding: 16
+  },
+  paper: {
+    padding: 30
   }
 });
 
 class App extends Component {
   componentDidMount = () => {
-    this.props.fetchItems();
+    this.props.items.length === 0 && this.props.fetchItems();
   };
-  handleClick = () => {
-    alert('clicked')
+  renderUsers() {
+    return this.props.items.map(item => {
+      return (
+        <ListItem key={item._id} button>
+          <ListItemAvatar>
+            <Avatar>
+              <MenuItemIcon/>
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={item.name}
+          />
+        </ListItem>
+      )
+    })
   };
 
   render() {
-    let {classes, items} = this.props;
+    let {classes} = this.props;
     return (
       <Wrapper>
-        <div style={{margin: 40}}>
-          <Button className={classes.root} onClick={this.handleClick}>Home Page Button</Button>
+        <div style={{marginTop: 50}}>
+          <Grid container justify={'center'}>
+            <Grid item xs={11} md={6}>
+              <Paper className={classes.paper}>
+                <Typography type="display1" className={classes.title}
+                            style={{paddingTop: 0}}>
+                  Menu
+                </Typography>
+                <div className={classes.demo}>
+                  <List dense>
+                    {this.renderUsers()}
+                  </List>
+                </div>
+              </Paper>
+            </Grid>
+          </Grid>
         </div>
       </Wrapper>
     )
